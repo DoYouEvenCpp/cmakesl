@@ -5,7 +5,7 @@ function(cmsl_add_test)
     cmake_parse_arguments(CMSL_ADD_TEST "${options}" "${oneValueArgs}"
             "${multiValueArgs}" ${ARGN} )
 
-    set(test_name ${CMSL_ADD_TEST_NAME}_test)
+    set(test_name ${CMSL_ADD_TEST_NAME}_cmakesl_test)
 
     add_executable(${test_name} ${CMSL_ADD_TEST_SOURCES})
 
@@ -18,6 +18,11 @@ function(cmsl_add_test)
     target_include_directories(${test_name}
         PRIVATE
             ${CMSL_ADD_TEST_INCLUDE_DIRS}
+    )
+
+    target_compile_options(${test_name}
+        PRIVATE
+            ${CMAKESL_ADDITIONAL_COMPILER_FLAGS}
     )
 
     add_test(NAME ${test_name} COMMAND ${test_name})

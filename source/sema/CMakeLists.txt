@@ -4,7 +4,7 @@ set(BUILTIN_TOKENS_PROVIDERS_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated)
 set(BUILTIN_TOKENS_PROVIDER_GENERATOR_COMMAND
     python3
     ${CMAKESL_SCRIPTS_DIR}/builtin_token_providers_generator.py
-        ${CMAKESL_DOC_DIR}/builtin_types
+        ${CMAKESL_DOC_DIR}/builtin
         ${BUILTIN_TOKENS_PROVIDERS_DIR}/builtin_token_providers.hpp
 )
 
@@ -16,7 +16,7 @@ add_custom_command(
 )
 
 set(SEMA_SOURCES
-    add_subdirectory_handler.hpp
+    add_subdirectory_semantic_handler.hpp
     block_node_manipulator.cpp
     block_node_manipulator.hpp
     builtin_cmake_namespace_context.cpp
@@ -103,4 +103,9 @@ target_include_directories(sema
 target_link_libraries(sema
     PRIVATE
         ast
+)
+
+target_compile_options(sema
+    PRIVATE
+        ${CMAKESL_ADDITIONAL_COMPILER_FLAGS}
 )

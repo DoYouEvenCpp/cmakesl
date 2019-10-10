@@ -8,7 +8,7 @@ cmsl_add_test(
     INCLUDE_DIRS
         ${CMAKESL_SOURCES_DIR}
         ${CMAKESL_FACADE_SOURCES_DIR}
-        LIBRARIES
+    LIBRARIES
         lexer
         errors
 )

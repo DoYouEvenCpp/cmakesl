@@ -99,5 +99,8 @@ private:
   std::unordered_map<unsigned, std::unique_ptr<inst::instance>>
     m_global_variables;
   bool m_breaking_from_loop{ false };
+
+  std::optional<std::vector<inst::instance*>>
+    m_params_of_add_subdirectory_with_cmakesl_script_call;
 };
 }

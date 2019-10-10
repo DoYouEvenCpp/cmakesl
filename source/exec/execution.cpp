@@ -17,6 +17,12 @@ std::unique_ptr<inst::instance> execution::call(
   const sema::sema_function& fun, const std::vector<inst::instance*>& params,
   inst::instances_holder_interface& instances)
 {
+  //  if (is_call_of_add_subdirectory_with_cmakesl_script()) {
+  //    execute_add_subdirectory_with_cmakesl_script(fun);
+  //     Result instance will be collected later.
+  //    return nullptr;
+  //  }
+
   std::unique_ptr<inst::instance> result;
   if (auto user_function =
         dynamic_cast<const sema::user_sema_function*>(&fun)) {
@@ -106,10 +112,10 @@ void execution::execute_node(const sema::sema_node& node)
 {
   // Todo: consider introducing a visitor for such execution, instead of
   // dynamic casts.
-  if (auto ret_node = dynamic_cast<const sema::return_node*>(&node)) {
+  if (dynamic_cast<const sema::return_node*>(&node) != nullptr) {
     m_function_return_value = execute_infix_expression(node);
-  } else if (auto ret_node =
-               dynamic_cast<const sema::implicit_return_node*>(&node)) {
+  } else if (dynamic_cast<const sema::implicit_return_node*>(&node) !=
+             nullptr) {
 
     inst::instances_holder instances{ m_builtin_types };
     auto void_val = instances.create_void();

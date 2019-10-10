@@ -10,6 +10,10 @@ set(CMAKESL_DOC_DIR ${CMAKESL_DIR}/doc)
 set(CMAKESL_SCRIPTS_DIR ${CMAKESL_DIR}/scripts)
 set(CMAKESL_SOURCES_DIR ${CMAKESL_DIR}/source)
 
+if(NOT WIN32)
+    set(CMAKESL_ADDITIONAL_COMPILER_FLAGS -Wall -Werror)
+endif()
+
 include_directories(facade)
 add_subdirectory(source)
 
@@ -35,4 +39,9 @@ if (CMAKESL_WITH_TESTS)
     include(CTest)
     add_subdirectory(external/googletest EXCLUDE_FROM_ALL)
     add_subdirectory(test)
+endif ()
+
+option(CMAKESL_WITH_DOCS "When ON, documentation will be built" OFF)
+if (CMAKESL_WITH_DOCS)
+    add_subdirectory(doc)
 endif ()

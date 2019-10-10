@@ -22,7 +22,7 @@
 #include "common/overloaded.hpp"
 #include "errors/error.hpp"
 #include "errors/errors_observer.hpp"
-#include "sema/add_subdirectory_handler.hpp"
+#include "sema/add_subdirectory_semantic_handler.hpp"
 #include "sema/block_node_manipulator.hpp"
 #include "sema/builtin_sema_function.hpp"
 #include "sema/enum_creator.hpp"
@@ -253,7 +253,7 @@ void sema_builder_ast_visitor::visit(const ast::class_member_access_node& node)
   }
 
   m_result_node = std::make_unique<class_member_access_node>(
-    node, std::move(lhs), *member_info);
+    node, std::move(lhs), member_name, *member_info);
 }
 
 std::unique_ptr<expression_node> sema_builder_ast_visitor::build_function_call(
@@ -303,8 +303,8 @@ std::unique_ptr<expression_node> sema_builder_ast_visitor::build_function_call(
 
   switch (chosen_function->context().type()) {
     case sema_context::context_type::namespace_: {
-      return std::make_unique<function_call_node>(node, *chosen_function,
-                                                  std::move(*params));
+      return std::make_unique<function_call_node>(
+        node, *chosen_function, std::move(*params), node.name());
     } break;
     case sema_context::context_type::class_: {
       const auto& name = chosen_function->return_type().name();
@@ -316,10 +316,10 @@ std::unique_ptr<expression_node> sema_builder_ast_visitor::build_function_call(
       if (is_constructor) {
         return std::make_unique<constructor_call_node>(
           node, chosen_function->return_type(), *chosen_function,
-          std::move(*params));
+          std::move(*params), node.name());
       } else {
         return std::make_unique<implicit_member_function_call_node>(
-          node, *chosen_function, std::move(*params));
+          node, *chosen_function, std::move(*params), node.name());
       }
     } break;
 
@@ -364,13 +364,14 @@ sema_builder_ast_visitor::build_add_subdirectory_call(
     m_.add_subdir_handler.handle_add_subdirectory(name, params_but_name);
 
   const auto visitor = overloaded{
-    [&](const add_subdirectory_handler::contains_cmakesl_script& val)
+    [&](const add_subdirectory_semantic_handler::contains_cmakesl_script& val)
       -> std::unique_ptr<expression_node> {
       return std::make_unique<add_subdirectory_node>(
         node, std::move(name_string_node), *val.main_function,
-        std::move(params_but_name));
+        std::move(params_but_name), node.name());
     },
-    [&](const add_subdirectory_handler::contains_old_cmake_script& val)
+    [&](
+      const add_subdirectory_semantic_handler::contains_old_cmake_script& val)
       -> std::unique_ptr<expression_node> {
       return std::make_unique<add_subdirectory_with_old_script_node>(
         node, std::move(name_string_node), m_.builtin_types.void_);
@@ -418,7 +419,7 @@ void sema_builder_ast_visitor::visit(
                                                 std::move(*params));
 
   m_result_node = std::make_unique<member_function_call_node>(
-    node, std::move(lhs), *chosen_function, std::move(*params));
+    node, std::move(lhs), *chosen_function, std::move(*params), node.name());
 }
 
 void sema_builder_ast_visitor::visit(const ast::bool_value_node& node)
@@ -505,8 +506,6 @@ void sema_builder_ast_visitor::visit(const ast::return_node& node)
 
 void sema_builder_ast_visitor::visit(const ast::translation_unit_node& node)
 {
-  static const auto name_token =
-    lexer::make_token(lexer::token_type::identifier, "");
   std::vector<std::unique_ptr<sema_node>> nodes;
 
   for (const auto& n : node.nodes()) {
@@ -1059,10 +1058,6 @@ bool sema_builder_ast_visitor::check_function_return_type(
     return true;
   }
 
-  const auto src_range = return_expression.ast_node().src_range();
-  const auto source =
-    m_.parsing_ctx.function_parsing_ctx.function->signature().name.source();
-
   const auto& function_return_type =
     m_.parsing_ctx.function_parsing_ctx.function->return_type();
 
@@ -1076,7 +1071,7 @@ bool sema_builder_ast_visitor::check_function_return_type(
 
   for (const auto& issue : init_issues) {
     function_return_value_failed_initialization_errors_reporter reporter{
-      m_.errors_observer, function_return_type, return_kw
+      m_.errors_observer, return_kw
     };
     std::visit(reporter, issue);
   }
@@ -1091,7 +1086,6 @@ sema_builder_ast_visitor::try_deduce_currently_parsed_function_return_type()
     return &m_.builtin_types.void_;
   }
 
-  bool all_same{ true };
   const auto& first_type =
     m_.parsing_ctx.function_parsing_ctx.return_nodes.front()->type();
 

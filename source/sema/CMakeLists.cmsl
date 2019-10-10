@@ -8,7 +8,7 @@ string add_builtin_tokens_generation_command()
     builtin_tokens_providers_dir + "/builtin_token_providers.hpp";
   auto builtin_tokens_generator_command = {
     "python3", cmsl::scripts_dir + "/builtin_token_providers_generator.py",
-    cmsl::doc_dir + "/builtin_types", result_file_path
+    cmsl::doc_dir + "/builtin", result_file_path
   };
 
   cmake::make_directory(builtin_tokens_providers_dir);
@@ -24,13 +24,13 @@ void main(cmake::project& p)
 
   auto sources = {
     // clang-format: off
-    "add_subdirectory_handler.hpp",
+    "add_subdirectory_semantic_handler.hpp",
     "block_node_manipulator.cpp",
     "block_node_manipulator.hpp",
     "builtin_cmake_namespace_context.cpp",
     "builtin_cmake_namespace_context.hpp",
     "builtin_context_base.cpp",
-    "builtin_context_utils.hpp",
+    "builtin_context_base.hpp",
     "builtin_function_kind.hpp",
     "builtin_sema_context.cpp",
     "builtin_sema_context.hpp",

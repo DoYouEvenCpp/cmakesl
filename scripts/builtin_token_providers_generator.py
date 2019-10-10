@@ -136,6 +136,8 @@ GENERATION_INFO = {
             'operator_greater_equal': ['bool operator>=(string rhs);', 'bool operator', '>='],
             'operator_plus': ['string operator+(string rhs);', 'string operator', '+'],
             'operator_plus_equal': ['string& operator+=(string rhs);', 'string& operator', '+='],
+            'operator_slash': ['string operator/(string rhs);', 'string operator', '/'],
+            'operator_slash_equal': ['string& operator/=(string rhs);', 'string& operator', '/='],
             'clear': ['void clear();', 'void ', 'clear'],
             'insert': ['string& insert(int position, string str);', 'string& ', 'insert'],
             'erase_pos': ['string& erase(int position);', 'string& ', 'erase'],
@@ -320,7 +322,7 @@ GENERATION_INFO = {
             'add_custom_command': ['void add_custom_command(list<string> command, string output);', 'void ', 'add_custom_command'],
             'make_directory': ['void make_directory(string dir);', 'void ', 'make_directory'],
             'set_old_style_variable': ['void set_old_style_variable(string name, string value);', 'void ', 'set_old_style_variable'],
-            'get_old_style_variable': ['void get_old_style_variable(string name);', 'void ', 'get_old_style_variable'],
+            'get_old_style_variable': ['string get_old_style_variable(string name);', 'string ', 'get_old_style_variable'],
 
             'system_id_name': ['enum system_id', 'enum ', 'system_id'],
             'system_id_windows': ['windows,', '', 'windows'],
