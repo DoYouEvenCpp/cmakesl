@@ -298,7 +298,7 @@ private:
 
   void visit(const sema::implicit_return_node&) override
   {
-    CMSL_UNREACHABLE("Indexing implicit return node");
+    // Do nothing.
   }
 
   void visit(const sema::for_node& node) override
