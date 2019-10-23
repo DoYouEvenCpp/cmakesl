@@ -29,8 +29,8 @@ target_include_directories(cmsl_tools
 
 target_link_libraries(cmsl_tools 
     PRIVATE
-    sema
-    errors
+        sema
+        errors
 )
 
 target_compile_options(cmsl_tools
