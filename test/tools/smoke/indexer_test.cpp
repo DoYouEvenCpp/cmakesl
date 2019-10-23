@@ -80,14 +80,13 @@ namespace cmsl::tools::test
         ASSERT_THAT(parsed_source, NotNull());
         ASSERT_THAT(index_entries, NotNull());
 
-        print(index_entries);
-
+        // auto and operator
         EXPECT_THAT(index_entries->num_entries, Eq(2u));
 
         cleanup(parsed_source, index_entries);
     }
 
-    TEST_F(IndexerSmokeTest,            ForLoopIteration)
+    TEST_F(IndexerSmokeTest,            ForLoopInitialization)
     {
         const auto source =
                 "void foo()"
@@ -100,6 +99,60 @@ namespace cmsl::tools::test
 
         // void and int types.
         EXPECT_THAT(index_entries->num_entries, Eq(2u));
+
+        cleanup(parsed_source, index_entries);
+    }
+
+    TEST_F(IndexerSmokeTest,            ForLoopCondition)
+    {
+        const auto source =
+                "void foo()"
+                "{"
+                "    int i;"
+                "    for(; i < 0;) {}"
+                "}";
+        auto [parsed_source, index_entries] = index_source(source);
+        ASSERT_THAT(parsed_source, NotNull());
+        ASSERT_THAT(index_entries, NotNull());
+
+        // void and int types, 'i' identifier reference and operator<.
+        EXPECT_THAT(index_entries->num_entries, Eq(4u));
+
+        cleanup(parsed_source, index_entries);
+    }
+
+    TEST_F(IndexerSmokeTest,            ForLoopIteration)
+    {
+        const auto source =
+                "void foo()"
+                "{"
+                "    int i;"
+                "    for(;;++i) {}"
+                "}";
+        auto [parsed_source, index_entries] = index_source(source);
+        ASSERT_THAT(parsed_source, NotNull());
+        ASSERT_THAT(index_entries, NotNull());
+
+        // void and int types, 'i' identifier reference and operator++.
+        EXPECT_THAT(index_entries->num_entries, Eq(4u));
+
+        cleanup(parsed_source, index_entries);
+    }
+
+    TEST_F(IndexerSmokeTest,            ForLoopBody)
+    {
+        const auto source =
+                "void foo()"
+                "{"
+                "    int i;"
+                "    for(;;) { ++i; }"
+                "}";
+        auto [parsed_source, index_entries] = index_source(source);
+        ASSERT_THAT(parsed_source, NotNull());
+        ASSERT_THAT(index_entries, NotNull());
+
+        // void and int types, 'i' identifier reference and operator++.
+        EXPECT_THAT(index_entries->num_entries, Eq(4u));
 
         cleanup(parsed_source, index_entries);
     }
