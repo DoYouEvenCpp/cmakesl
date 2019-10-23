@@ -4,10 +4,12 @@
 #include "ast/variable_declaration_node.hpp"
 #include "cmsl_parsed_source.hpp"
 #include "sema/identifiers_context.hpp"
+#include "sema/qualified_contextes_refs.hpp"
 #include "sema/sema_node_visitor.hpp"
 #include "sema/sema_nodes.hpp"
 
 #include <cstring>
+#include <stack>
 #include <vector>
 
 namespace cmsl::tools {
@@ -320,12 +322,30 @@ private:
 
   void visit(const sema::break_node&) override
   {
-    // Todo: implement
+    // Do nothing.
   }
 
-  void visit(const sema::namespace_node&) override
+  void visit(const sema::namespace_node& node) override
   {
-    // Todo: implement
+    m_identifiers_context.enter_global_ctx(node.);
+
+    for (const auto& sub_node : node.nodes()) {
+      sub_node->visit(*this);
+    }
+
+    m_identifiers_context.leave_ctx();
+
+    std::stack<sema::qualified_contextes_refs::all_qualified_contextes_guard>
+      guards;
+    for (const auto& name_with_colon : node.names()) {
+      auto guard = m_.qualified_ctxs.all_qualified_ctxs_guard(
+        name_with_colon.name, /*exported=*/false);
+      guards.emplace(std::move(guard));
+    }
+
+    while (!guards.empty()) {
+      guards.pop();
+    }
   }
 
   void visit(const sema::ternary_operator_node&) override
