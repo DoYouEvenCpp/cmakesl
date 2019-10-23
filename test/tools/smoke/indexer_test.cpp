@@ -23,5 +23,5 @@ namespace cmsl::tools::test
 
         cmsl_destroy_index_entries(index_entries);
         cmsl_destroy_parsed_source(parsed_source);
-    } 
+    }
 }

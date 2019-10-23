@@ -303,7 +303,19 @@ private:
 
   void visit(const sema::for_node& node) override
   {
-    // Todo: implement
+    if (const auto init = node.init()) {
+      init->visit(*this);
+    }
+
+    if (const auto condition = node.condition()) {
+      condition->visit(*this);
+    }
+
+    if (const auto iteration = node.iteration()) {
+      iteration->visit(*this);
+    }
+
+    node.body().visit(*this);
   }
 
   void visit(const sema::break_node&) override
