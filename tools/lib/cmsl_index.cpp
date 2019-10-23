@@ -206,7 +206,12 @@ public:
 
   void visit(const sema::unary_operator_node& node) override
   {
-    // Todo: implement
+    node.expression().visit(*this);
+
+    const auto& operator_signature = node.function().signature();
+    add_entry(node.operator_(), cmsl_index_entry_type::operator_function,
+              operator_signature.name.source().path(),
+              operator_signature.name.src_range().begin.absolute);
   }
 
   const std::vector<cmsl_index_entry>& result() const
