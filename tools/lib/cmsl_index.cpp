@@ -29,8 +29,7 @@ public:
   {
     const auto& ast_node = node.ast_node();
     const auto& variable_decl =
-      dynamic_cast<const ast::standalone_variable_declaration_node*>(&ast_node)
-        ->variable_declaration();
+      *dynamic_cast<const ast::variable_declaration_node*>(&ast_node);
 
     add_type_entry(variable_decl.type(), node.type());
 
