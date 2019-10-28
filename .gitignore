@@ -4,4 +4,3 @@ cmake-build-*
 .idea/*
 *.user
 *.pyc
-*.code
